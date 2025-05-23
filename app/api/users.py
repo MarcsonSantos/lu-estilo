@@ -4,10 +4,10 @@ from sqlalchemy.orm import Session
 
 from app.core.security import verify_password, create_access_token
 from app.db.session import get_db
-from app.db.models.clients import User
-from app.schemas.clients import UserCreate, UserOut
-from app.crud.clients import create_user, get_user_by_id, get_user_by_cpf
-from app.crud.clients import get_user_by_email
+from app.db.models.users import User
+from app.schemas.users import UserCreate, UserOut
+from app.crud.users import create_user, get_user_by_id, get_user_by_cpf
+from app.crud.users import get_user_by_email
 from app.api.auth import get_current_user
 
 router = APIRouter(prefix="/auth", tags=["auth"])
