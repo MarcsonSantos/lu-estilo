@@ -58,3 +58,12 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         raise HTTPException(status_code=401, detail="Credenciais inválidas")
     token = create_access_token({"sub": user.email})
     return {"access_token": token, "token_type": "bearer"}
+
+
+@router.post("/refresh-token")
+def refresh_token(current_user: User = Depends(get_current_user)):
+    """
+    Gera um novo token para o usuário autenticado.
+    """
+    new_token = create_access_token({"sub": current_user.email})
+    return {"access_token": new_token, "token_type": "bearer"}
