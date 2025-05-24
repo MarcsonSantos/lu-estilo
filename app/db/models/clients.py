@@ -11,3 +11,4 @@ class Client(Base):
     phone_number = Column(String, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     user = relationship("User", back_populates="client")
+    orders = relationship("Order", back_populates="client")
