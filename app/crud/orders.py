@@ -1,14 +1,8 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.db.models.orders import Order, OrderItem
 from app.db.models.products import Product
 from app.schemas.orders import OrderCreate, OrderUpdate
-from fastapi import HTTPException
-
-from fastapi import HTTPException
-from sqlalchemy.orm import Session
-from app.db.models.orders import Order, OrderItem
-from app.db.models.products import Product
-from app.schemas.orders import OrderCreate
 
 
 def create_order(db: Session, client_id: int, order_data: OrderCreate) -> Order:
@@ -40,7 +34,7 @@ def create_order(db: Session, client_id: int, order_data: OrderCreate) -> Order:
             order_id=order.id,
             product_id=item.product_id,
             quantity=item.quantity,
-            price=product.price,
+            price=product.sale_price,
         )
         db.add(order_item)
 
