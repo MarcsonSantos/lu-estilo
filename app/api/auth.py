@@ -1,4 +1,4 @@
-from jwt.exceptions import InvalidTokenError
+from jose.exceptions import JWTError
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -34,7 +34,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         email = payload.get("sub")  # O e-mail do usuário é armazenado no campo 'sub' do token
         if email is None:
             raise credentials_exception
-    except InvalidTokenError:
+    except JWTError:
         raise credentials_exception
 
     # Busca o usuário pelo e-mail extraído do token
