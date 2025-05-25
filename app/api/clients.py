@@ -20,6 +20,12 @@ def list_clients(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    """
+    Listar todos os clientes.
+
+    - Apenas administradores podem acessar esta rota.
+    - Suporte a filtros por nome e paginação via `skip` e `limit`.
+    """
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Acesso negado")
 
@@ -34,6 +40,12 @@ def create_new_client(
     client_in: ClientCreate,
     db: Session = Depends(get_db),
 ):
+    """
+    Criar um novo cliente.
+
+    - Verifica se o e-mail e CPF já estão cadastrados.
+    - Cria um usuário vinculado ao cliente.
+    """
     if get_user_by_email(db, client_in.email):
         raise HTTPException(status_code=400, detail="Email já está em uso.")
     if get_user_by_cpf(db, client_in.cpf):
@@ -51,6 +63,12 @@ def get_client(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    """
+    Obter informações de um cliente específico.
+
+    - Clientes podem acessar apenas seus próprios dados.
+    - Administradores podem acessar qualquer cliente.
+    """
     client = get_client_by_id(db, id)
     if not client:
         raise HTTPException(status_code=404, detail="Cliente não encontrado")
@@ -66,6 +84,12 @@ def update_client(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    """
+    Atualizar informações de um cliente.
+
+    - Clientes podem atualizar apenas seus próprios dados.
+    - Administradores podem atualizar qualquer cliente.
+    """
     client = get_client_by_id(db, id)
     if not client:
         raise HTTPException(status_code=404, detail="Cliente não encontrado")
@@ -86,6 +110,11 @@ def delete_client(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    """
+    Excluir um cliente do sistema.
+
+    - Apenas administradores têm permissão para excluir clientes.
+    """
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Apenas administradores podem excluir clientes")
 

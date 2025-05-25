@@ -13,4 +13,4 @@ def init_db(max_retries: int = 10, delay: int = 2):
         except OperationalError as e:
             print(f"Banco ainda não está pronto: {e}")
             time.sleep(delay)
-    print("⛔ Falha ao conectar ao banco após várias tentativas.")
+    print("Falha ao conectar ao banco após várias tentativas.")

@@ -9,8 +9,19 @@ from app.db.models.orders import Order
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
+
 @router.post("/", response_model=OrderOut)
-def create(client_order: OrderCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def create(
+    client_order: OrderCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Criar um novo pedido.
+
+    - Apenas clientes logados podem criar pedidos.
+    - Valida a existência de estoque para os produtos.
+    """
     if not current_user.client:
         raise HTTPException(status_code=403, detail="Apenas clientes podem criar pedidos")
     return create_order(db, current_user.client.id, client_order)
@@ -23,6 +34,13 @@ def list_all(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    """
+    Listar pedidos.
+
+    - Administradores visualizam todos os pedidos.
+    - Clientes visualizam apenas seus próprios pedidos.
+    - Suporte a paginação com `skip` e `limit`.
+    """
     if current_user.is_admin:
         return list_orders(db, skip, limit)
 
@@ -40,15 +58,20 @@ def list_all(
 
 @router.get("/{id}", response_model=OrderOut)
 def get(
-        id: int,
-        db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user),
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
+    """
+    Obter detalhes de um pedido específico.
+
+    - Clientes podem acessar apenas seus próprios pedidos.
+    - Administradores podem acessar qualquer pedido.
+    """
     order = get_order_by_id(db, id)
     if not order:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
 
-    # Verifica se é admin ou se é o cliente dono do pedido
     if not current_user.is_admin:
         if not current_user.client or order.client_id != current_user.client.id:
             raise HTTPException(status_code=403, detail="Acesso negado")
@@ -63,6 +86,12 @@ def update(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    """
+    Atualizar um pedido existente.
+
+    - Clientes podem atualizar apenas seus próprios pedidos.
+    - Administradores podem atualizar qualquer pedido.
+    """
     order = get_order_by_id(db, id)
     if not order:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
@@ -74,13 +103,18 @@ def update(
     return update_order(db, order, order_in)
 
 
-
 @router.delete("/{id}")
 def delete(
     id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    """
+    Excluir um pedido.
+
+    - Clientes podem excluir apenas seus próprios pedidos.
+    - Administradores podem excluir qualquer pedido.
+    """
     order = get_order_by_id(db, id)
     if not order:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
