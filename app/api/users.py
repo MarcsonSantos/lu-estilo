@@ -13,13 +13,18 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.get("/users", response_model=list[UserOut])
-def list_users(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def list_users(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     """
     Lista todos os usuários cadastrados.
 
     - Requer autenticação.
-    - Qualquer usuário autenticado pode visualizar a lista.
+    - Apenas administradores podem visualizar a lista.
     """
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Acesso permitido apenas para administradores")
     return db.query(User).all()
 
 
@@ -35,9 +40,13 @@ def get_user(
     Busca um usuário específico pelo ID, email ou CPF.
 
     - Requer autenticação.
+    - Apenas administradores podem buscar usuários.
     - Retorna erro 400 se nenhum parâmetro for fornecido.
     - Retorna erro 404 se o usuário não for encontrado.
     """
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Acesso permitido apenas para administradores")
+
     if id:
         user = get_user_by_id(db, id)
     elif email:
