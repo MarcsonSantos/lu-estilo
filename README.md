@@ -13,7 +13,6 @@ API REST construída com **FastAPI** para gerenciamento de **clientes**, **produ
 - **Docker / Docker Compose** – Containerização e orquestração
 - **Pytest** – Framework de testes
 - **JWT** – Autenticação baseada em token
-- **Twilio WhatsApp API** – Integração para envio de mensagens pelo WhatsApp
 
 ---
 
